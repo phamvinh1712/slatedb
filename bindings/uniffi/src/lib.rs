@@ -14,6 +14,7 @@ mod error;
 mod filter_policy;
 mod iterator;
 mod logging;
+mod memory;
 mod merge_operator;
 mod metrics;
 mod object_store;
@@ -53,6 +54,7 @@ pub use filter_policy::{
 };
 pub use iterator::DbIterator;
 pub use logging::{init_logging, LogCallback, LogLevel, LogRecord};
+pub use memory::native_allocated_bytes;
 pub use merge_operator::MergeOperator;
 pub use metrics::{
     Counter, DefaultMetricsRecorder, Gauge, Histogram, HistogramMetricValue, Metric, MetricLabel,
