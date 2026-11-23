@@ -397,6 +397,7 @@ func uniffiCheckChecksums() {
 			return C.uniffi_slatedb_uniffi_checksum_func_native_allocated_bytes()
 		})
 		if checksum != 2736 {
+			// If this happens try cleaning and rebuilding your project
 			panic("slatedb: uniffi_slatedb_uniffi_checksum_func_native_allocated_bytes: UniFFI API checksum mismatch")
 		}
 	}

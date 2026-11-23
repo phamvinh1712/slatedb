@@ -57,8 +57,6 @@ fi
 rm -f \
   "${GO_PKG_DIR}/slatedb.go" \
   "${GO_PKG_DIR}/slatedb.h"
-sed '/return C\.uniffi_slatedb_uniffi_checksum_func_native_allocated_bytes()/,/panic(/ {
-  /\/\/ If this happens try cleaning and rebuilding your project/d
-}' "${GENERATED_GO_FILE}" > "${GO_PKG_DIR}/slatedb.go"
+cp "${GENERATED_GO_FILE}" "${GO_PKG_DIR}/$(basename "${GENERATED_GO_FILE}")"
 cp "${GENERATED_H_FILE}" "${GO_PKG_DIR}/$(basename "${GENERATED_H_FILE}")"
 go -C "${GO_PKG_DIR}" fmt ./...
