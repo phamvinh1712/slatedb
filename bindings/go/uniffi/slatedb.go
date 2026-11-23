@@ -394,6 +394,15 @@ func uniffiCheckChecksums() {
 	}
 	{
 		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
+			return C.uniffi_slatedb_uniffi_checksum_func_native_allocated_bytes()
+		})
+		if checksum != 2736 {
+			// If this happens try cleaning and rebuilding your project
+			panic("slatedb: uniffi_slatedb_uniffi_checksum_func_native_allocated_bytes: UniFFI API checksum mismatch")
+		}
+	}
+	{
+		checksum := rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint16_t {
 			return C.uniffi_slatedb_uniffi_checksum_method_admin_create_clone_builder_from_source()
 		})
 		if checksum != 20657 {
@@ -17881,4 +17890,10 @@ func InitLogging(level LogLevel, callback *LogCallback) error {
 		return false
 	})
 	return _uniffiErr.AsError()
+}
+
+func NativeAllocatedBytes() uint64 {
+	return FfiConverterUint64INSTANCE.Lift(rustCall(func(_uniffiStatus *C.RustCallStatus) C.uint64_t {
+		return C.uniffi_slatedb_uniffi_fn_func_native_allocated_bytes(_uniffiStatus)
+	}))
 }

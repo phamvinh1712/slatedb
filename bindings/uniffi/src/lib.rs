@@ -14,6 +14,7 @@ mod error;
 mod filter_policy;
 mod iterator;
 mod logging;
+mod memory;
 mod merge_operator;
 mod metrics;
 mod object_store;
