@@ -7,7 +7,7 @@ const SHARD_COUNT: usize = 64;
 static ALLOCATOR: CountingAllocator<System> = CountingAllocator::new(System);
 
 #[uniffi::export]
-pub fn native_allocated_bytes() -> u64 {
+fn native_allocated_bytes() -> u64 {
     ALLOCATOR.live_bytes() as u64
 }
 
@@ -39,23 +39,22 @@ impl<A> CountingAllocator<A> {
         let hash = (address >> 4) ^ (address >> 13) ^ (address >> 22) ^ (address >> 30);
         &self.shards[hash & (SHARD_COUNT - 1)].0
     }
+
+    fn count_allocation(&self, ptr: *mut u8, size: usize) -> *mut u8 {
+        if !ptr.is_null() {
+            self.shard(ptr).fetch_add(size, Ordering::Relaxed);
+        }
+        ptr
+    }
 }
 
 unsafe impl<A: GlobalAlloc> GlobalAlloc for CountingAllocator<A> {
     unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
-        let ptr = unsafe { self.inner.alloc(layout) };
-        if !ptr.is_null() {
-            self.shard(ptr).fetch_add(layout.size(), Ordering::Relaxed);
-        }
-        ptr
+        self.count_allocation(unsafe { self.inner.alloc(layout) }, layout.size())
     }
 
     unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
-        let ptr = unsafe { self.inner.alloc_zeroed(layout) };
-        if !ptr.is_null() {
-            self.shard(ptr).fetch_add(layout.size(), Ordering::Relaxed);
-        }
-        ptr
+        self.count_allocation(unsafe { self.inner.alloc_zeroed(layout) }, layout.size())
     }
 
     unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
